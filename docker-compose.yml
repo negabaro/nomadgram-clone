@@ -1,0 +1,47 @@
+version: '3.3'
+
+services:
+  db:
+    image: postgres:9.6-alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+      - ./init:/docker-entrypoint-initdb.d
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password # 패스워드도 설정했는데 안먹히는거 같은디?? 패스워드 없이 들어가짐
+      #- POSTGRES_DB=nomadgram <<does not work?
+    ports:
+      - 5432:5432
+    #environment:
+    #  - POSTGRES_USER=user
+    #  - POSTGRES_PASSWORD=pass
+    #  - POSTGRES_DB=nomad_db
+  web:
+    build: .
+    #user: $USER
+    #user: "$$(id -u $USER):$$(id -g $USER)"
+     
+    #build: compose/local/django/
+    #command: python /code/manage.py migrate --noinput
+    #command: python /code/manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/code
+      #- /etc/group:/etc/group:ro
+      #- /etc/passwd:/etc/passwd:ro
+    ports:
+      - 8000:8000
+    environment:
+      - SECRET_KEY=changemeinprod
+      - HOST_USER_NAME=$USER
+      - DATABASE_URL=postgres://postgres:password@db:5432/postgres
+      - USE_DOCKER=yes
+      - DJANGO_ALLOWED_HOSTS=*
+      #- LOCAL_UID=$$(id -u $USER)
+      #- LOCAL_GID=$$(id -g $USER)
+      #- ALLOWED_HOSTS=*
+      #- ALLOWED_HOSTS
+    depends_on:
+      - db
+
+volumes:
+  postgres_data:
