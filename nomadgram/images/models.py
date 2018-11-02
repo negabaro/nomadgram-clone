@@ -16,9 +16,14 @@ class Image(TimeStampedModel):
     file = models.ImageField()
     location = models.CharField(max_length=140)
     caption = models.TextField()
-    creator = models.ForeignKey(user_models.User, on_delete=models.CASCADE, null=True)
+    #creator = models.ForeignKey(user_models.User, on_delete=models.CASCADE, null=True)
+    creator = models.ForeignKey(user_models.User, on_delete=models.CASCADE, null=True, related_name='images') #for following_user.images.all()
     def __str__(self):
         return self.location
+    class Meta:
+        ordering = ['-created_at']
+        #db에서 얻은 리스트를 생성된 날짜로 정렬할 수 있게 
+        #메타클래스는 이처럼 모델의 설정을 위해서 사용
         
 class Comment(TimeStampedModel):
 

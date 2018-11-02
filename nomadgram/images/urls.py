@@ -6,4 +6,5 @@ urlpatterns = [
     path("all/", view=views.ListAllImages.as_view(), name="all_imaes"),
     path("comments/", view=views.ListAllComments.as_view(), name="all_comments"),
     path("likes/", view=views.ListAllLikes.as_view(), name="all_likes"),
+    path("feed/",view=views.Feed.as_view(), name="feed"),
 ]
