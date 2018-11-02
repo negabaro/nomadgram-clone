@@ -18,6 +18,13 @@ class Image(TimeStampedModel):
     caption = models.TextField()
     #creator = models.ForeignKey(user_models.User, on_delete=models.CASCADE, null=True)
     creator = models.ForeignKey(user_models.User, on_delete=models.CASCADE, null=True, related_name='images') #for following_user.images.all()
+    
+    @property
+    def like_count(self):
+        return self.likes.all().count()
+    #like숫자만 보고싶기에 프로퍼티를 작성
+    
+    
     def __str__(self):
         return self.location
     class Meta:
