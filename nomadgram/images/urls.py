@@ -9,6 +9,13 @@ urlpatterns = [
       view=views.Feed.as_view(),
       name="feed"  
     ),
+    url(
+         regex=r'(?P<image_id>[0-9]+)/like/',
+         #위설정으로 url의 특정부분을 조작가능하게 된것!
+         view=views.LikeImage.as_view(),
+         name='like_image'
+     )
+     
   
 ]
 #url사용할때는 regex필수였다

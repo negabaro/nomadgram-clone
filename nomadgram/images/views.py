@@ -81,3 +81,13 @@ class Feed(APIView):
      #def get_key(image):
      #    return image.created_at
      #lambda로 정의했기에 없어도됨
+
+class LikeImage(APIView):
+
+     def get(self, request, image_id, format=None):
+
+         #http://192.168.0.17:8000/images/18/like/
+         #에 억세스하면 print에 18이라는게 뜸
+         print(image_id)
+
+         return Response(status=200)
