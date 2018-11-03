@@ -20,8 +20,15 @@ class User(AbstractUser):
     bio = models.TextField(null=True)
     phone = models.CharField(max_length=140, null=True)
     gender = models.CharField(max_length=80, choices=GENDER_CHOICES, null=True)
-    followers = models.ManyToManyField("self")
-    following = models.ManyToManyField("self")
+    followers = models.ManyToManyField("self", blank=True)
+    following = models.ManyToManyField("self", blank=True)
+    #blank=True를 안해주면 유저생성시 팔로워 팔로잉을 반드시 선택해야 되므로 귀찮음
+    #변경시 마이그레이션 필수
+    #python manage.py makemigrations
+    #python manage.py migrate
+
+
+
     
     def get_absolute_url(self):
         return reverse("users:detail", kwargs={"username": self.username})

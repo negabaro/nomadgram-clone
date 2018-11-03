@@ -17,7 +17,7 @@ class Image(TimeStampedModel):
     location = models.CharField(max_length=140)
     caption = models.TextField()
     #creator = models.ForeignKey(user_models.User, on_delete=models.CASCADE, null=True)
-    creator = models.ForeignKey(user_models.User, on_delete=models.CASCADE, null=True, related_name='images') #for following_user.images.all()
+    creator = models.ForeignKey(user_models.User, on_delete=models.CASCADE, related_name='images') #for following_user.images.all()
     
     @property
     def like_count(self):
@@ -45,7 +45,7 @@ class Comment(TimeStampedModel):
         return self.message
     
 class Like(TimeStampedModel):
-    creator = models.ForeignKey(user_models.User,on_delete=models.CASCADE, null=True)
+    creator = models.ForeignKey(user_models.User,on_delete=models.CASCADE)
     image = models.ForeignKey(Image,on_delete=models.CASCADE, null=True, related_name='likes')
     
     def __str__(self):
