@@ -35,7 +35,10 @@ class Image(TimeStampedModel):
 class Comment(TimeStampedModel):
 
     message = models.TextField()
-    creator = models.ForeignKey(user_models.User,on_delete=models.CASCADE, null=True)
+    #creator = models.ForeignKey(user_models.User,on_delete=models.CASCADE,null=True)
+    #null=True면 valid인식 안됨 
+    creator = models.ForeignKey(user_models.User,on_delete=models.CASCADE)
+    
     image = models.ForeignKey(Image,on_delete=models.CASCADE, null=True, related_name='comments')
     
     def __str__(self):

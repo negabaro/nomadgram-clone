@@ -13,7 +13,9 @@ class FeedUserSerializer(serializers.ModelSerializer):
         )
         
 class CommentSerializer(serializers.ModelSerializer):
-
+    creator = FeedUserSerializer(read_only=True)
+    #creator같은경우 유저가 직접입력하는게 의미가없으므로 read_only=True옵션을 지정해주면 inValid되게됨
+    
     class Meta:
         model = models.Comment
         #fields = '__all__'

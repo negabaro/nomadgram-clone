@@ -84,11 +84,15 @@ class Feed(APIView):
      #    return image.created_at
      #lambda로 정의했기에 없어도됨
 
+
+
+
 class LikeImage(APIView):
 
-     def get(self, request, image_id, format=None):
-     #def post(self, request, image_id, format=None):
+     #def get(self, request, image_id, format=None):
+     def post(self, request, image_id, format=None):
      #원래는 post하는게 맞는데 body에 뭘 넘기고 하는건 아니고 테스트하기 쉬우므로 get을 이용
+     #post 바디에게 메시지를 보내서 db에 생성
      
          user = request.user
      
@@ -128,3 +132,31 @@ class LikeImage(APIView):
              #http://192.168.0.17:8000/admin/images/like/ 을 새로고침하면 추가되는걸 확인가능
 
              return Response(status=status.HTTP_201_CREATED)
+
+class CommentOnImage(APIView):
+     def post(self, request, image_id, format=None):
+         
+         user = request.user
+         #login한 유저 정보
+         
+         try:
+             found_image = models.Image.objects.get(id=image_id)
+             #여기의 image_id는 /images/2/comment 의 2에 해당
+         except models.Image.DoesNotExist:
+             return Response(status=status.HTTP_404_NOT_FOUND)
+             
+         #{"message":"Hello"}
+         print(request.data)
+         serializer = serializers.CommentSerializer(data=request.data)
+         #{"message":"Hello"}(request.data)과 같은 필드를 갖고 있는 새로운 오브젝트를 생성
+         
+         if serializer.is_valid():
+              
+             print('im valid')
+             serializer.save(creator=user, image=found_image)
+             
+             return Response(data=serializer.data, status=status.HTTP_201_CREATED)
+         else:
+             # {"message":"Hello"}일 경우 "creator": [ "This field is required." 에러가나오게 됨(creator가 없으므로)
+             return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+         
