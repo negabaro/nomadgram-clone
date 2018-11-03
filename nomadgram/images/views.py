@@ -1,6 +1,8 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from . import models, serializers
+from rest_framework import status
+#status안에 HTTP_404_NOT_FOUND,HTTP_201_CREATED를 사용하기위해
 
 # Create your views here.
 class ListAllImages(APIView):
@@ -85,6 +87,7 @@ class Feed(APIView):
 class LikeImage(APIView):
 
      def get(self, request, image_id, format=None):
+     #def post(self, request, image_id, format=None):
      #원래는 post하는게 맞는데 body에 뭘 넘기고 하는건 아니고 테스트하기 쉬우므로 get을 이용
      
          user = request.user
@@ -99,16 +102,29 @@ class LikeImage(APIView):
              found_image = models.Image.objects.get(id=image_id)
              #get대신에 fileter혹은 all이 될 수 도있음
          except models.Image.DoesNotExist:
-             return Response(status=404)
+             return Response(status=status.HTTP_404_NOT_FOUND)
         
+         try:
+             #http://192.168.0.17:8000/images/2/like/
+             #해당 모델에 라이크가 있으면 그 라이크를 삭제하고
+             preexsiting_like = models.Like.objects.get(
+                 creator=user,
+                 image=found_image
+             )
+             preexsiting_like.delete()
+             
+             return Response(status=status.HTTP_204_NO_CONTENT)
         
-         new_like = models.Like.objects.create(
-           creator=request.user,
-           image=found_image
-         )
+         except models.Like.DoesNotExist:
+             #http://192.168.0.17:8000/images/2/like/
+             #해당 모델의 라이크가 없으면 생성한다.
+             new_like = models.Like.objects.create(
+                 creator=request.user,
+                 image=found_image
+             )
          
-         new_like.save()
-         #http://192.168.0.17:8000/images/2/like/ 에 들어가면 현재유저이름으로 좋아요 1건이 추가됨
-         #http://192.168.0.17:8000/admin/images/like/ 을 새로고침하면 추가되는걸 확인가능
+             new_like.save()
+             #http://192.168.0.17:8000/images/2/like/ 에 들어가면 현재유저이름으로 좋아요 1건이 추가됨
+             #http://192.168.0.17:8000/admin/images/like/ 을 새로고침하면 추가되는걸 확인가능
 
-         return Response(status=200)
+             return Response(status=status.HTTP_201_CREATED)
