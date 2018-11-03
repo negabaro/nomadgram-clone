@@ -159,4 +159,18 @@ class CommentOnImage(APIView):
          else:
              # {"message":"Hello"}일 경우 "creator": [ "This field is required." 에러가나오게 됨(creator가 없으므로)
              return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class Comment(APIView):
+     def delete(self, request, comment_id, format=None):
          
+         user = request.user
+         
+         try:
+             comment = models.Comment.objects.get(id=comment_id, creator=user)
+             #댓글을 작성한 작성자만 삭제될수있게 하기위해 creator=user추가
+             comment.delete()
+             return Response(status=status.HTTP_204_NO_CONTENT)
+             
+         except models.Comment.DoesNotExist:
+             return Response(status=status.HTTP_404_NOT_FOUND)
