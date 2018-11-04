@@ -85,7 +85,27 @@ class Feed(APIView):
      #lambda로 정의했기에 없어도됨
 
 
-
+class UnLikeImage(APIView):
+    
+     def delete(self, request, image_id, format=None ):
+         user = request.user
+         
+         try:
+             found_image = models.Image.objects.get(id=image_id)
+         except models.Image.DoesNotExist:
+             return Response(status=status.HTTP_404_NOT_FOUND)
+             
+         try:
+             preexsiting_like = models.Like.objects.get(
+                 creator=user,
+                 image=found_image
+             )
+             preexsiting_like.delete()
+             return Response(status=status.HTTP_204_NO_CONTENT)
+         except models.Like.DoesNotExist:
+             return Response(status=status.HTTP_304_NOT_MODIFIED)
+             
+             
 
 class LikeImage(APIView):
 
@@ -115,9 +135,9 @@ class LikeImage(APIView):
                  creator=user,
                  image=found_image
              )
-             preexsiting_like.delete()
+             #preexsiting_like.delete()
              
-             return Response(status=status.HTTP_204_NO_CONTENT)
+             return Response(status=status.HTTP_304_NOT_MODIFIED)
         
          except models.Like.DoesNotExist:
              #http://192.168.0.17:8000/images/2/like/
