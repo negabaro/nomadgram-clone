@@ -23,7 +23,10 @@ class Image(TimeStampedModel):
     def like_count(self):
         return self.likes.all().count()
     #like숫자만 보고싶기에 프로퍼티를 작성
-    
+
+    @property
+    def comment_count(self):
+        return self.comments.all().count()
     
     def __str__(self):
         return self.location
