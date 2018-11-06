@@ -194,3 +194,29 @@ class Comment(APIView):
              
          except models.Comment.DoesNotExist:
              return Response(status=status.HTTP_404_NOT_FOUND)
+
+#http://192.168.0.17/images/search/?hashtags=cheap,hot%20girs
+class Search(APIView):
+     def get(self, request, format=None):
+         #print(request.query_params)
+         #<QueryDict: {'hashtags': ['cheap,hot girs']}
+         
+         hashtags = request.query_params.get('hashtags', None)
+         print(hashtags)
+         #cheap,hot girs
+         if hashtags is not None:
+
+             hashtags = hashtags.split(",")
+
+             images = models.Image.objects.filter(tags__name__in=hashtags)
+             #tags__name = deep relationship!
+             #tags__name__contains = xx 이런식으로도 쓸수있음 (대소문자 구분함)
+             #tags__name__icontains = xx 이렇게쓰면 대소문자 구분안하고 검색함 
+
+             serializer = serializers.ImageSerializer(images, many=True)
+
+             return Response(data=serializer.data, status=status.HTTP_200_OK)
+
+         else:
+
+             return Response(status=status.HTTP_204_NO_CONTENT)

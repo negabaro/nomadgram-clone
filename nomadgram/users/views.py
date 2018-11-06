@@ -97,3 +97,22 @@ class UserFollowing(APIView):
             user_following, many=True)
         
         return Response(data=serializer.data, status=status.HTTP_200_OK)
+
+#http://192.168.0.17:8000/users/search/?username=kim
+class Search(APIView):
+
+    def get(self, request, format=None):
+
+        username = request.query_params.get('username', None)
+
+        if username is not None:
+
+            users = models.User.objects.filter(username__istartswith=username)
+
+            serializer = serializers.ListUserSerializer(users, many=True)
+
+            return Response(data=serializer.data, status=status.HTTP_200_OK)
+
+        else:
+
+            return Response(status=status.HTTP_400_BAD_REQUEST)

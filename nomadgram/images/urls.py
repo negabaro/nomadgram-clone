@@ -31,7 +31,11 @@ urlpatterns = [
          view=views.Comment.as_view(),
          name='comment'
      ),
-     
+     url(
+         regex=r'search/$',
+         view=views.Search.as_view(),
+         name='search'
+     ),    
   
 ]
 #url사용할때는 regex필수였다
