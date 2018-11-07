@@ -24,7 +24,7 @@ urlpatterns = [
     #url(r'^users/', include('nomadgram.users.urls', namespace='users')),
     #django 1.x -> url(r'^images/', include('nomadgram.images.urls', namespace='images')),
     path("images/", include("nomadgram.images.urls", namespace="images"),),
-  
+    path('notifications/', include('nomadgram.notifications.urls', namespace='notifications')),
     #url(r'^accounts/', include('allauth.urls')),
 
 ] + static(
