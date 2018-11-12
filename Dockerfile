@@ -22,6 +22,7 @@ RUN apk update \
 COPY Pipfile Pipfile.lock ./
 ADD ./requirements requirements
 RUN pip install -r requirements/local.txt
+RUN pip install django-taggit
 ##################################Supervisor install
 
 #ENV SUPERVISOR_VERSION=3.3.1
