@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from . import models, serializers
 from rest_framework import status
 #status안에 HTTP_404_NOT_FOUND,HTTP_201_CREATED를 사용하기위해
+from nomadgram.notifications import views as notification_views
 
 # Create your views here.
 class ListAllImages(APIView):
@@ -147,6 +148,10 @@ class LikeImage(APIView):
                  image=found_image
              )
          
+             #좋아요시 notification추가
+             notification_views.create_notification(
+                 user, found_image.creator, 'like', found_image)
+             
              new_like.save()
              #http://192.168.0.17:8000/images/2/like/ 에 들어가면 현재유저이름으로 좋아요 1건이 추가됨
              #http://192.168.0.17:8000/admin/images/like/ 을 새로고침하면 추가되는걸 확인가능
@@ -175,6 +180,10 @@ class CommentOnImage(APIView):
              print('im valid')
              serializer.save(creator=user, image=found_image)
              
+             #comment시 notification추가
+             notification_views.create_notification(
+                 user, found_image.creator, 'comment', found_image, serializer.data['message'])
+              
              return Response(data=serializer.data, status=status.HTTP_201_CREATED)
          else:
              # {"message":"Hello"}일 경우 "creator": [ "This field is required." 에러가나오게 됨(creator가 없으므로)
