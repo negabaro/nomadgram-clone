@@ -15,13 +15,13 @@ urlpatterns = [
          name='image_detail'
     ),
     url(
-         regex=r'(?P<image_id>[0-9]+)/like/',
+         regex=r'(?P<image_id>[0-9]+)/likes/',
          #위설정으로 url의 특정부분을 조작가능하게 된것!
          view=views.LikeImage.as_view(),
          name='like_image'
      ),
     url(
-         regex=r'(?P<image_id>[0-9]+)/unlike/',
+         regex=r'(?P<image_id>[0-9]+)/unlikes/',
          #위설정으로 url의 특정부분을 조작가능하게 된것!
          view=views.UnLikeImage.as_view(),
          name='like_image'

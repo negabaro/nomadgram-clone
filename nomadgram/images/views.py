@@ -4,7 +4,9 @@ from . import models, serializers
 from rest_framework import status
 #status안에 HTTP_404_NOT_FOUND,HTTP_201_CREATED를 사용하기위해
 from nomadgram.notifications import views as notification_views
-
+from nomadgram.users import models as user_models
+from nomadgram.users import serializers as user_serializers
+ 
 # Create your views here.
 class ListAllImages(APIView):
 
@@ -114,7 +116,19 @@ class UnLikeImage(APIView):
              
 
 class LikeImage(APIView):
+     #http://192.168.0.17:8000/images/1/likes/
+     def get(self, request, image_id, format=None):
 
+         likes = models.Like.objects.filter(image__id=image_id)
+
+         like_creators_ids = likes.values('creator_id')
+
+         users = user_models.User.objects.filter(id__in=like_creators_ids)
+
+         serializer = user_serializers.ListUserSerializer(users, many=True)
+
+         return Response(data=serializer.data, status=status.HTTP_200_OK)
+         
      #def get(self, request, image_id, format=None):
      def post(self, request, image_id, format=None):
      #원래는 post하는게 맞는데 body에 뭘 넘기고 하는건 아니고 테스트하기 쉬우므로 get을 이용
