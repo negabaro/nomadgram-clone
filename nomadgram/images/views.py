@@ -62,7 +62,12 @@ class Feed(APIView):
          print(image_list)
          #sorted_list = sorted(image_list, key=get_key)
          #sorted_list = sorted(image_list, key=get_key, reverse=True)
-         
+         my_images = user.images.all()[:2]
+
+         for image in my_images:
+
+             image_list.append(image)
+             
          sorted_list = sorted( image_list, key=lambda image: image.created_at, reverse=True)
          
          #정렬시켜 주기
