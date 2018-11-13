@@ -66,7 +66,8 @@ class ImageSerializer(serializers.ModelSerializer):
               #'likes',
               'like_count',
               #property설정
-              'creator'
+              'creator',
+              'created_at'
             )
 
 class UserProfileImageSerializer(serializers.ModelSerializer):
