@@ -1,7 +1,9 @@
 from rest_framework import serializers
 from . import models
 from nomadgram.users import models as user_models
-
+from taggit_serializer.serializers import (TagListSerializerField,
+                                            TaggitSerializer)
+from . import models
 class SmallImageSerializer(serializers.ModelSerializer):
 
     """ Used for the notifications """
@@ -45,7 +47,7 @@ class LikeSerializer(serializers.ModelSerializer):
 
 
 
-class ImageSerializer(serializers.ModelSerializer):
+class ImageSerializer(TaggitSerializer, serializers.ModelSerializer):
 
     #comment_set = CommentSerializer(many=True)
     #like_set = LikeSerializer(many=True)
@@ -53,6 +55,7 @@ class ImageSerializer(serializers.ModelSerializer):
     comments = CommentSerializer(many=True)
     #likes = LikeSerializer(many=True)
     creator = FeedUserSerializer()
+    tags = TagListSerializerField()
     
     class Meta:
         model = models.Image
@@ -67,6 +70,7 @@ class ImageSerializer(serializers.ModelSerializer):
               'like_count',
               #property설정
               'creator',
+              'tags',
               'created_at'
             )
 

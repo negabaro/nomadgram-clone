@@ -68,6 +68,7 @@ THIRD_PARTY_APPS = [
     'allauth.socialaccount',
     'rest_framework',
     'taggit',
+    'taggit_serializer',  # tag serializer
 ]
 LOCAL_APPS = [
     'nomadgram.users.apps.UsersAppConfig',
