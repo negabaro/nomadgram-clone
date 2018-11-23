@@ -23,6 +23,7 @@ COPY Pipfile Pipfile.lock ./
 ADD ./requirements requirements
 RUN pip install -r requirements/local.txt
 RUN pip install django-taggit
+RUN pip install djangorestframework-jwt
 ##################################Supervisor install
 
 #ENV SUPERVISOR_VERSION=3.3.1

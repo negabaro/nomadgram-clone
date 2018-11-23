@@ -10,20 +10,31 @@ urlpatterns = [
          name="feed"  
     ),
     url(
-         regex=r'(?P<image_id>[0-9]+)/like/',
+         regex=r'^^(?P<image_id>[0-9]+)/$',
+         view=views.ImageDetail.as_view(),
+         name='image_detail'
+    ),
+    url(
+         regex=r'(?P<image_id>[0-9]+)/likes/',
          #위설정으로 url의 특정부분을 조작가능하게 된것!
          view=views.LikeImage.as_view(),
          name='like_image'
      ),
     url(
-         regex=r'(?P<image_id>[0-9]+)/unlike/',
+         regex=r'(?P<image_id>[0-9]+)/unlikes/',
          #위설정으로 url의 특정부분을 조작가능하게 된것!
          view=views.UnLikeImage.as_view(),
          name='like_image'
      ),
      url(
-         regex=r'(?P<image_id>[0-9]+)/comments/',
+         regex=r'(?P<image_id>[0-9]+)/comments/$',
+         #$적는거 깜빡해서 밑에 ModerateComments가 루팅이 안되어서 삽질함..
          view=views.CommentOnImage.as_view(),
+         name='comment_image'
+     ),
+     url(
+         regex=r'^(?P<image_id>[0-9]+)/comments/(?P<comment_id>[0-9]+)/$',
+         view=views.ModerateComments.as_view(),
          name='comment_image'
      ),
      url(

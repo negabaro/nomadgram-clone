@@ -3,7 +3,10 @@ from rest_framework.response import Response
 from . import models, serializers
 from rest_framework import status
 #status안에 HTTP_404_NOT_FOUND,HTTP_201_CREATED를 사용하기위해
-
+from nomadgram.notifications import views as notification_views
+from nomadgram.users import models as user_models
+from nomadgram.users import serializers as user_serializers
+ 
 # Create your views here.
 class ListAllImages(APIView):
 
@@ -61,7 +64,12 @@ class Feed(APIView):
          print(image_list)
          #sorted_list = sorted(image_list, key=get_key)
          #sorted_list = sorted(image_list, key=get_key, reverse=True)
-         
+         my_images = user.images.all()[:2]
+
+         for image in my_images:
+
+             image_list.append(image)
+             
          sorted_list = sorted( image_list, key=lambda image: image.created_at, reverse=True)
          
          #정렬시켜 주기
@@ -108,7 +116,19 @@ class UnLikeImage(APIView):
              
 
 class LikeImage(APIView):
+     #http://192.168.0.17:8000/images/1/likes/
+     def get(self, request, image_id, format=None):
 
+         likes = models.Like.objects.filter(image__id=image_id)
+
+         like_creators_ids = likes.values('creator_id')
+
+         users = user_models.User.objects.filter(id__in=like_creators_ids)
+
+         serializer = user_serializers.ListUserSerializer(users, many=True)
+
+         return Response(data=serializer.data, status=status.HTTP_200_OK)
+         
      #def get(self, request, image_id, format=None):
      def post(self, request, image_id, format=None):
      #원래는 post하는게 맞는데 body에 뭘 넘기고 하는건 아니고 테스트하기 쉬우므로 get을 이용
@@ -147,6 +167,10 @@ class LikeImage(APIView):
                  image=found_image
              )
          
+             #좋아요시 notification추가
+             notification_views.create_notification(
+                 user, found_image.creator, 'like', found_image)
+             
              new_like.save()
              #http://192.168.0.17:8000/images/2/like/ 에 들어가면 현재유저이름으로 좋아요 1건이 추가됨
              #http://192.168.0.17:8000/admin/images/like/ 을 새로고침하면 추가되는걸 확인가능
@@ -175,6 +199,10 @@ class CommentOnImage(APIView):
              print('im valid')
              serializer.save(creator=user, image=found_image)
              
+             #comment시 notification추가
+             notification_views.create_notification(
+                 user, found_image.creator, 'comment', found_image, serializer.data['message'])
+              
              return Response(data=serializer.data, status=status.HTTP_201_CREATED)
          else:
              # {"message":"Hello"}일 경우 "creator": [ "This field is required." 에러가나오게 됨(creator가 없으므로)
@@ -220,3 +248,79 @@ class Search(APIView):
          else:
 
              return Response(status=status.HTTP_204_NO_CONTENT)
+
+class ModerateComments(APIView):
+
+    def delete(self, request, image_id, comment_id, format=None):
+
+        user = request.user
+
+        try:
+            comment_to_delete = models.Comment.objects.get(
+                id=comment_id, image__id=image_id, image__creator=user)
+            comment_to_delete.delete()
+        except models.Comment.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        return Response(status=status.HTTP_204_NO_CONTENT)
+        
+class ImageDetail(APIView):
+
+
+     def find_own_image(self, image_id, user):
+         try:
+             image = models.Image.objects.get(id=image_id, creator=user)
+             return image
+         except models.Image.DoesNotExist:
+             return None
+             
+     def get(self, request, image_id, format=None):
+
+         user = request.user
+
+         try:
+             image = models.Image.objects.get(id=image_id)
+         except models.Image.DoesNotExist:
+             return Response(status=status.HTTP_404_NOT_FOUND)
+
+         serializer = serializers.ImageSerializer(image)
+
+         return Response(data=serializer.data, status=status.HTTP_200_OK)
+         
+     def put(self, request, image_id, format=None):
+
+         user = request.user
+
+         image = self.find_own_image(image_id, user)
+
+         if image is None:
+
+             return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+         serializer = serializers.InputImageSerializer(
+             image, data=request.data, partial=True)
+
+         if serializer.is_valid():
+
+             serializer.save(creator=user)
+
+             return Response(data=serializer.data, status=status.HTTP_204_NO_CONTENT)
+
+         else:
+
+             return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+     def delete(self, request, image_id, format=None):
+
+         user = request.user
+
+         image = self.find_own_image(image_id, user)
+
+         if image is None:
+
+             return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+         image.delete()
+
+         return Response(status=status.HTTP_204_NO_CONTENT)

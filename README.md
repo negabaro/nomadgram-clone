@@ -55,3 +55,12 @@ pip install django-extensions
 >>> import django
 >>> django.get_version()
 '1.6.1'
+
+
+```
+python manage.py makemigrations && python manage.py migrate
+```
+
+```
+python manage.py createsuperuser
+```
