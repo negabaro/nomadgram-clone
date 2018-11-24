@@ -25,6 +25,7 @@ RUN pip install -r requirements/local.txt
 RUN pip install django-taggit
 RUN pip install djangorestframework-jwt
 RUN pip install django-taggit-serializer
+RUN pip install django-rest-auth
 ##################################Supervisor install
 
 #ENV SUPERVISOR_VERSION=3.3.1

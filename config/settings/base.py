@@ -67,8 +67,12 @@ THIRD_PARTY_APPS = [
     'allauth.account',
     'allauth.socialaccount',
     'rest_framework',
+    'rest_framework.authtoken',
     'taggit',
     'taggit_serializer',  # tag serializer
+    'rest_auth',  # rest auth
+    'rest_auth.registration',  # enable registration
+     
 ]
 LOCAL_APPS = [
     'nomadgram.users.apps.UsersAppConfig',
@@ -96,9 +100,9 @@ AUTHENTICATION_BACKENDS = [
 # https://docs.djangoproject.com/en/dev/ref/settings/#auth-user-model
 AUTH_USER_MODEL = 'users.User'
 # https://docs.djangoproject.com/en/dev/ref/settings/#login-redirect-url
-LOGIN_REDIRECT_URL = 'users:redirect'
+#LOGIN_REDIRECT_URL = 'users:redirect'  #이게 있으면 회원가입이 안됨..그게 이거 없애니까 postman에서 로그인하면 csrf token없다고 에러남??
 # https://docs.djangoproject.com/en/dev/ref/settings/#login-url
-LOGIN_URL = 'account_login'
+#LOGIN_URL = 'account_login' #이게 있으면 회원가입이 안됨..그게 이거 없애니까 postman에서 로그인하면 csrf token없다고 에러남??
 
 # PASSWORDS
 # ------------------------------------------------------------------------------
@@ -232,7 +236,8 @@ ACCOUNT_AUTHENTICATION_METHOD = 'username'
 # https://django-allauth.readthedocs.io/en/latest/configuration.html
 ACCOUNT_EMAIL_REQUIRED = True
 # https://django-allauth.readthedocs.io/en/latest/configuration.html
-ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
+# ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
+ACCOUNT_EMAIL_VERIFICATION = 'none' # allauth.account.models.DoesNotExist: EmailAddress matching query does not exist.에러 해결을 위해
 # https://django-allauth.readthedocs.io/en/latest/configuration.html
 ACCOUNT_ADAPTER = 'nomadgram.users.adapters.AccountAdapter'
 # https://django-allauth.readthedocs.io/en/latest/configuration.html
@@ -253,3 +258,6 @@ REST_FRAMEWORK = {
          'rest_framework.authentication.BasicAuthentication',
      ),
  }
+
+REST_USE_JWT = True  #JWT활성화 옵션
+ACCOUNT_LOGOUT_ON_GET = True #LOGOUT시 get사용허가
